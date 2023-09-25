@@ -6,59 +6,43 @@ struct Tuple{
     int second;
 };
 
-int dfs(int visited[], int V[], int lengthV, struct Tuple *E, int lengthE){
-    int sum=0; 
-    visited[0] = 1;
-    for(int i=0; i<lengthV; i++){
-        sum += V[i];
+void dfs(int k1, int visited[], int V[], int lengthV, struct Tuple *E, int lengthE){
+    visited[k1] = 1;
+    for(int e=0; e<lengthE; e++){
+        int from = E[e].first-1;
+        if(from == k1){
+            int p = E[e].second-1; 
+            if(visited[p] == 0){
+                dfs(p, visited, V, lengthV, E, lengthE);
+            }
+        }
     }
-    return sum;
 }
 
 int my_no_connected_components(int V[], int lengthV, struct Tuple* E, int lengthE){
-    // create visited array
+    // init
+    int ncc = 0;
+
+        // create visited array
     int *visited = malloc(lengthV * sizeof(int)); // Allocate memory for the visited array
     if (visited == NULL) { // Handle memory allocation error if necessary
         return -1; // Indicate an error
     }
-    for(int k=0; k<lengthV; k++){
-        visited[k] = 0;
+    for(int i=0; i<lengthV; i++){
+        visited[i] = 0;
     }
-
-    int ncc = 0;
-
-    //for(int i=0; i<lengthE; i++){
-    //    //if(visited[V[i]] == 0){
-    //    //    dfs(V[i]);
-    //    //}
-    //    ncc += E[i].first;
+    //
+    // find
+    for(int k=0; k<lengthV; k++){
+        if(visited[k] == 0){
+            dfs(k, visited, V, lengthV, E, lengthE);
+            ncc++;
+        }
+    }
+    //int sum = 0;
+    //for(int i=0; i<lengthV; i++){
+    //    sum += visited[i];
     //}
-    ncc = dfs(visited, V, lengthV, E, lengthE);
-    return visited[0];
+
+    return ncc;
 }
-
-// class my_no_connected_components:
-//     def __init__(self, g):
-//         self.g = g
-//         self.visited = {}
-//         self.V = g.keys()
-//         self.ncc = 0
-//         for k in self.V:
-//             self.visited[k] = self.visited.get(k, False)
-// 
-//     def find(self):
-//         for k in self.V:
-//             if self.visited[k] == False:
-//                 self.dfs(k)
-//                 self.ncc+=1
-//         return self.ncc
-// 
-//     def dfs(self, k):
-//         self.visited[k] = True
-//         for p in self.g[k]:
-//             if self.visited[p] == False:
-//                 self.dfs(p)
-// 
-// def alternative_method(V, E):
-//     return my_no_connected_components(build_graph(V,E)).find()
-
